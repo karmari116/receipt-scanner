@@ -103,24 +103,35 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        // 6. Date-based folder organization: uploads/YYYY/MM/
+        // 7. Date-based folder organization: uploads/YYYY/MM/
+        // Note: File storage only works locally, not on Vercel serverless
         const receiptDate = extractedData.date ? new Date(extractedData.date) : new Date();
         const year = receiptDate.getFullYear().toString();
         const month = (receiptDate.getMonth() + 1).toString().padStart(2, '0');
 
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads', year, month);
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+        let publicUrl = 'cloud-storage'; // Default for Vercel (no local file)
+
+        // Only save to local filesystem in development (not on Vercel)
+        const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
+        if (!isVercel) {
+            try {
+                const uploadDir = path.join(process.cwd(), 'public', 'uploads', year, month);
+                if (!fs.existsSync(uploadDir)) {
+                    fs.mkdirSync(uploadDir, { recursive: true });
+                }
+
+                const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
+                const fileName = `${extractedData.merchant?.replace(/[^a-zA-Z0-9]/g, '_') || 'receipt'}_${Date.now()}_${safeFileName}`;
+                const filePath = path.join(uploadDir, fileName);
+                await writeFile(filePath, buffer);
+                publicUrl = `/uploads/${year}/${month}/${fileName}`;
+                console.log("Saved to:", publicUrl);
+            } catch (fileError) {
+                console.error("File save failed (continuing without file):", fileError);
+            }
+        } else {
+            console.log("Running on Vercel - skipping local file storage");
         }
-
-        const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
-        const fileName = `${extractedData.merchant?.replace(/[^a-zA-Z0-9]/g, '_') || 'receipt'}_${Date.now()}_${safeFileName}`;
-        const filePath = path.join(uploadDir, fileName);
-        await writeFile(filePath, buffer);
-
-        // URL for the frontend (relative to public/)
-        const publicUrl = `/uploads/${year}/${month}/${fileName}`;
-        console.log("Saved to:", publicUrl);
 
         // 8. Save to Database
         const receipt = await prisma.receipt.create({
