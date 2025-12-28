@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Camera, Upload, Loader2, CheckCircle2, XCircle, User, Briefcase, Trophy } from 'lucide-react';
+import { Camera, Upload, Loader2, CheckCircle2, XCircle, User, Briefcase, Trophy, Pill } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 const ACCOUNTS = [
     { id: 'Karthik Business', label: 'Karthik Business', icon: Briefcase, color: 'text-blue-600' },
     { id: 'Karrah', label: 'Karrah', icon: User, color: 'text-pink-600' },
     { id: 'Cricket', label: 'Cricket', icon: Trophy, color: 'text-green-600' },
+    { id: 'Medicine', label: 'Medicine', icon: Pill, color: 'text-purple-600' },
 ];
 
 export default function CameraCapture() {
