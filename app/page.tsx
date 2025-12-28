@@ -4,6 +4,10 @@ import ReceiptActions from '@/components/ReceiptActions';
 import { Receipt } from '@prisma/client';
 import { ExternalLink, TrendingUp, Calendar, PieChart, Download } from 'lucide-react';
 
+// Force dynamic rendering - no caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Get all receipts for display
 async function getReceipts() {
     try {
