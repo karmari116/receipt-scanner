@@ -16,6 +16,7 @@ model Receipt {
   url           String   // Google Drive URL or view link
   driveId       String   // Google Drive File ID or image hash
   transactionId String?  @unique // Unique transaction ID from receipt (e.g., TRANS ID)
+  account       String   @default("Karthik Business") // Account/business owner
   merchant      String?
   date          DateTime?
   amount        Float?

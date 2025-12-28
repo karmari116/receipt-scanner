@@ -59,6 +59,28 @@ async function getStats() {
             orderBy: { _sum: { amount: 'desc' } }
         });
 
+        // Account-based MTD breakdown
+        const accountMtd = await prisma.receipt.groupBy({
+            by: ['account'],
+            _sum: { amount: true },
+            _count: { id: true },
+            where: {
+                date: { gte: startOfMonth }
+            },
+            orderBy: { _sum: { amount: 'desc' } }
+        });
+
+        // Account-based YTD breakdown
+        const accountYtd = await prisma.receipt.groupBy({
+            by: ['account'],
+            _sum: { amount: true },
+            _count: { id: true },
+            where: {
+                date: { gte: startOfYear }
+            },
+            orderBy: { _sum: { amount: 'desc' } }
+        });
+
         return {
             allTime: {
                 total: allTime._sum.amount || 0,
@@ -76,7 +98,19 @@ async function getStats() {
                 name: c.category || 'Uncategorized',
                 total: c._sum.amount || 0,
                 count: c._count.id || 0
-            }))
+            })),
+            accounts: {
+                mtd: accountMtd.map(a => ({
+                    name: a.account,
+                    total: a._sum.amount || 0,
+                    count: a._count.id || 0
+                })),
+                ytd: accountYtd.map(a => ({
+                    name: a.account,
+                    total: a._sum.amount || 0,
+                    count: a._count?.id || 0
+                }))
+            }
         };
     } catch (e) {
         console.error("Stats error:", e);
@@ -84,7 +118,8 @@ async function getStats() {
             allTime: { total: 0, count: 0 },
             mtd: { total: 0, count: 0 },
             ytd: { total: 0, count: 0 },
-            categories: []
+            categories: [],
+            accounts: { mtd: [], ytd: [] }
         };
     }
 }

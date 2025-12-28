@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
     try {
         const formData = await req.formData();
         const file = formData.get('file') as File;
+        const account = (formData.get('account') as string) || 'Karthik Business';
 
         if (!file) {
             return NextResponse.json({ error: 'No file provided' }, { status: 400 });
@@ -146,6 +147,7 @@ export async function POST(req: NextRequest) {
                 url: publicUrl,
                 driveId: imageHash,
                 transactionId: extractedData.transactionId || null,
+                account: account,
                 merchant: extractedData.merchant || 'Unknown',
                 date: extractedData.date ? new Date(extractedData.date) : null,
                 amount: extractedData.amount || 0,

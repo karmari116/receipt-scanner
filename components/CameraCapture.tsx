@@ -1,11 +1,18 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Camera, Upload, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { Camera, Upload, Loader2, CheckCircle2, XCircle, User, Briefcase, Trophy } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+const ACCOUNTS = [
+    { id: 'Karthik Business', label: 'Karthik Business', icon: Briefcase, color: 'text-blue-600' },
+    { id: 'Karrah', label: 'Karrah', icon: User, color: 'text-pink-600' },
+    { id: 'Cricket', label: 'Cricket', icon: Trophy, color: 'text-green-600' },
+];
 
 export default function CameraCapture() {
     const [isUploading, setIsUploading] = useState(false);
+    const [selectedAccount, setSelectedAccount] = useState('Karthik Business');
     const fileInputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
 
@@ -16,6 +23,7 @@ export default function CameraCapture() {
         setIsUploading(true);
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('account', selectedAccount);
 
         try {
             const res = await fetch('/api/scan', {
@@ -32,7 +40,7 @@ export default function CameraCapture() {
             if (data.duplicate) {
                 alert(`⚠️ Duplicate Receipt!\n\n${data.message}`);
             } else if (data.success) {
-                alert(`✅ Receipt scanned successfully!\n\nMerchant: ${data.receipt?.merchant}\nAmount: $${data.receipt?.amount}\nCategory: ${data.receipt?.category}`);
+                alert(`✅ Receipt scanned for ${selectedAccount}!\n\nMerchant: ${data.receipt?.merchant}\nAmount: $${data.receipt?.amount}\nCategory: ${data.receipt?.category}`);
             }
 
             router.refresh(); // Refresh server components to show new receipt
@@ -47,6 +55,31 @@ export default function CameraCapture() {
 
     return (
         <div className="w-full bg-white rounded-xl shadow-sm border p-4 mb-4">
+            {/* Account Selector */}
+            <div className="mb-3">
+                <label className="text-xs text-gray-500 mb-1 block">Account</label>
+                <div className="flex gap-2">
+                    {ACCOUNTS.map((account) => {
+                        const Icon = account.icon;
+                        const isSelected = selectedAccount === account.id;
+                        return (
+                            <button
+                                key={account.id}
+                                onClick={() => setSelectedAccount(account.id)}
+                                className={`flex-1 py-2 px-3 rounded-lg border-2 flex items-center justify-center gap-1 text-sm font-medium transition-all ${isSelected
+                                        ? `border-blue-500 bg-blue-50 ${account.color}`
+                                        : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                                    }`}
+                            >
+                                <Icon className="h-4 w-4" />
+                                <span className="hidden sm:inline">{account.label}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* Upload Button */}
             <div className="flex gap-2">
                 <input
                     type="file"
@@ -71,7 +104,7 @@ export default function CameraCapture() {
                 </button>
             </div>
             <p className="text-xs text-gray-500 mt-2 text-center">
-                Takes a photo, uploads to Drive, and extracts data with AI.
+                Select account, then scan. AI extracts data automatically.
             </p>
         </div>
     );
