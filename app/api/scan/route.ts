@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { extractReceiptData } from '@/lib/anthropic';
 import { prisma } from '@/lib/prisma';
+import { uploadReceiptImage } from '@/lib/supabase';
 import fs from 'fs';
 import path from 'path';
 import { writeFile } from 'fs/promises';
@@ -109,28 +110,34 @@ export async function POST(req: NextRequest) {
         const year = receiptDate.getFullYear().toString();
         const month = (receiptDate.getMonth() + 1).toString().padStart(2, '0');
 
-        let publicUrl = 'cloud-storage'; // Default for Vercel (no local file)
+        let publicUrl = 'no-image'; // Default if upload fails
 
-        // Only save to local filesystem in development (not on Vercel)
-        const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
-        if (!isVercel) {
-            try {
-                const uploadDir = path.join(process.cwd(), 'public', 'uploads', year, month);
-                if (!fs.existsSync(uploadDir)) {
-                    fs.mkdirSync(uploadDir, { recursive: true });
-                }
+        // Generate filename for storage
+        const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
+        const fileName = `${extractedData.merchant?.replace(/[^a-zA-Z0-9]/g, '_') || 'receipt'}_${Date.now()}_${safeFileName}`;
 
-                const safeFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '');
-                const fileName = `${extractedData.merchant?.replace(/[^a-zA-Z0-9]/g, '_') || 'receipt'}_${Date.now()}_${safeFileName}`;
-                const filePath = path.join(uploadDir, fileName);
-                await writeFile(filePath, buffer);
-                publicUrl = `/uploads/${year}/${month}/${fileName}`;
-                console.log("Saved to:", publicUrl);
-            } catch (fileError) {
-                console.error("File save failed (continuing without file):", fileError);
-            }
+        // Try Supabase Storage first (cloud - works everywhere)
+        const supabaseUrl = await uploadReceiptImage(buffer, fileName, year, month);
+        if (supabaseUrl) {
+            publicUrl = supabaseUrl;
+            console.log("Uploaded to Supabase Storage:", publicUrl);
         } else {
-            console.log("Running on Vercel - skipping local file storage");
+            // Fallback to local storage (development only)
+            const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
+            if (!isVercel) {
+                try {
+                    const uploadDir = path.join(process.cwd(), 'public', 'uploads', year, month);
+                    if (!fs.existsSync(uploadDir)) {
+                        fs.mkdirSync(uploadDir, { recursive: true });
+                    }
+                    const filePath = path.join(uploadDir, fileName);
+                    await writeFile(filePath, buffer);
+                    publicUrl = `/uploads/${year}/${month}/${fileName}`;
+                    console.log("Saved locally:", publicUrl);
+                } catch (fileError) {
+                    console.error("Local file save failed:", fileError);
+                }
+            }
         }
 
         // 8. Save to Database

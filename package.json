@@ -12,6 +12,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
     "@prisma/client": "^5.10.2",
+    "@supabase/supabase-js": "^2.89.0",
     "clsx": "^2.1.1",
     "dotenv": "^17.2.3",
     "googleapis": "^169.0.0",
