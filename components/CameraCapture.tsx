@@ -67,12 +67,12 @@ export default function CameraCapture() {
                                 key={account.id}
                                 onClick={() => setSelectedAccount(account.id)}
                                 className={`flex-1 py-2 px-3 rounded-lg border-2 flex items-center justify-center gap-1 text-sm font-medium transition-all ${isSelected
-                                        ? `border-blue-500 bg-blue-50 ${account.color}`
-                                        : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                                    ? `border-blue-500 bg-blue-50 ${account.color}`
+                                    : 'border-gray-200 text-gray-500 hover:border-gray-300'
                                     }`}
                             >
                                 <Icon className="h-4 w-4" />
-                                <span className="hidden sm:inline">{account.label}</span>
+                                <span className="text-xs sm:text-sm">{account.label}</span>
                             </button>
                         );
                     })}
