@@ -1,0 +1,26 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Receipt {
+  id            Int      @id @default(autoincrement())
+  url           String   // Google Drive URL or view link
+  driveId       String   // Google Drive File ID or image hash
+  transactionId String?  @unique // Unique transaction ID from receipt (e.g., TRANS ID)
+  merchant      String?
+  date          DateTime?
+  amount        Float?
+  currency      String?  @default("USD")
+  category      String?
+  status        String   @default("processing") // processing, completed, failed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
