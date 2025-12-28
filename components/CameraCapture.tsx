@@ -59,7 +59,7 @@ export default function CameraCapture() {
             {/* Account Selector */}
             <div className="mb-3">
                 <label className="text-xs text-gray-500 mb-1 block">Account</label>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     {ACCOUNTS.map((account) => {
                         const Icon = account.icon;
                         const isSelected = selectedAccount === account.id;
@@ -67,13 +67,13 @@ export default function CameraCapture() {
                             <button
                                 key={account.id}
                                 onClick={() => setSelectedAccount(account.id)}
-                                className={`flex-1 py-2 px-3 rounded-lg border-2 flex items-center justify-center gap-1 text-sm font-medium transition-all ${isSelected
+                                className={`py-2 px-2 rounded-lg border-2 flex items-center justify-center gap-1 text-xs sm:text-sm font-medium transition-all ${isSelected
                                     ? `border-blue-500 bg-blue-50 ${account.color}`
                                     : 'border-gray-200 text-gray-500 hover:border-gray-300'
                                     }`}
                             >
-                                <Icon className="h-4 w-4" />
-                                <span className="text-xs sm:text-sm">{account.label}</span>
+                                <Icon className="h-4 w-4 flex-shrink-0" />
+                                <span className="truncate">{account.label}</span>
                             </button>
                         );
                     })}
