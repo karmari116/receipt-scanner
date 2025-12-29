@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import CameraCapture from '@/components/CameraCapture';
 import ReceiptActions from '@/components/ReceiptActions';
 import ChatWidget from '@/components/ChatWidget';
+import ManualEntryButton from '@/components/ManualEntryButton';
 import { Receipt } from '@prisma/client';
 import { ExternalLink, TrendingUp, Calendar, PieChart, Download } from 'lucide-react';
 
@@ -233,8 +234,10 @@ export default async function Home() {
                 {/* Capture Action */}
                 <CameraCapture />
 
-                {/* CSV Export Button */}
-                <div className="flex justify-end">
+                {/* Action Buttons */}
+                <div className="flex justify-between items-center">
+                    <ManualEntryButton />
+
                     <a
                         href="/api/export"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg hover:bg-emerald-700 transition-colors"
@@ -284,6 +287,7 @@ export default async function Home() {
                                             receiptId={receipt.id}
                                             merchant={receipt.merchant || 'Unknown'}
                                             amount={receipt.amount || 0}
+                                            receipt={JSON.parse(JSON.stringify(receipt))}
                                         />
                                     </div>
                                     {receipt.url && receipt.url !== 'mock_url' && (

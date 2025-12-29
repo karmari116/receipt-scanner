@@ -1,18 +1,21 @@
 'use client';
 
-import { Trash2, Copy } from 'lucide-react';
+import { Trash2, Copy, Pencil } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import EditReceiptModal from './EditReceiptModal';
 
 interface ReceiptActionsProps {
     receiptId: number;
     merchant: string;
     amount: number;
+    receipt?: any; // Full receipt object for editing
 }
 
-export default function ReceiptActions({ receiptId, merchant, amount }: ReceiptActionsProps) {
+export default function ReceiptActions({ receiptId, merchant, amount, receipt }: ReceiptActionsProps) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete this receipt?')) {
@@ -51,6 +54,13 @@ export default function ReceiptActions({ receiptId, merchant, amount }: ReceiptA
     return (
         <div className="flex gap-1">
             <button
+                onClick={() => setIsEditOpen(true)}
+                className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                title="Edit details"
+            >
+                <Pencil className="h-4 w-4" />
+            </button>
+            <button
                 onClick={handleFlagDuplicate}
                 disabled={loading}
                 className="p-2 text-orange-500 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
@@ -66,6 +76,13 @@ export default function ReceiptActions({ receiptId, merchant, amount }: ReceiptA
             >
                 <Trash2 className="h-4 w-4" />
             </button>
+
+            {/* Edit Modal */}
+            <EditReceiptModal
+                isOpen={isEditOpen}
+                onClose={() => setIsEditOpen(false)}
+                receipt={receipt || { id: receiptId, merchant, amount, date: null, category: null, account: 'Karthik Business' }}
+            />
         </div>
     );
 }
