@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import CameraCapture from '@/components/CameraCapture';
 import ReceiptActions from '@/components/ReceiptActions';
+import ChatWidget from '@/components/ChatWidget';
 import { Receipt } from '@prisma/client';
 import { ExternalLink, TrendingUp, Calendar, PieChart, Download } from 'lucide-react';
 
@@ -263,9 +264,9 @@ export default async function Home() {
                                                 </h3>
                                                 <p className="text-sm text-gray-500">{receipt.category}</p>
                                                 <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${(receipt as any).account === 'Karrah' ? 'bg-pink-100 text-pink-700' :
-                                                        (receipt as any).account === 'Cricket' ? 'bg-green-100 text-green-700' :
-                                                            (receipt as any).account === 'Medicine' ? 'bg-purple-100 text-purple-700' :
-                                                                'bg-blue-100 text-blue-700'
+                                                    (receipt as any).account === 'Cricket' ? 'bg-green-100 text-green-700' :
+                                                        (receipt as any).account === 'Medicine' ? 'bg-purple-100 text-purple-700' :
+                                                            'bg-blue-100 text-blue-700'
                                                     }`}>
                                                     {(receipt as any).account || 'Karthik Business'}
                                                 </span>
@@ -301,6 +302,9 @@ export default async function Home() {
                     </div>
                 </div>
             </div>
+
+            {/* AI Expense Chatbot */}
+            <ChatWidget />
         </main>
     );
 }
