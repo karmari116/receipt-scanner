@@ -8,6 +8,8 @@ A mobile-first Progressive Web App for scanning, organizing, and tracking busine
 
 - 📸 **Scan Receipts** - Camera capture or file upload
 - 🤖 **AI Extraction** - Claude Haiku extracts merchant, date, amount, category
+- 💬 **AI Assistant** - Chatbot to answer questions like "How much did I spend on food?"
+- ✏️ **Manual Entry** - Add cash expenses or edit scanned receipts
 - 🔄 **Duplicate Detection** - Transaction ID, image hash, and smart matching
 - ☁️ **Cloud Storage** - Images stored in Supabase Storage (IRS audit-ready)
 - 📊 **Dashboard** - MTD/YTD tracking with category breakdown
