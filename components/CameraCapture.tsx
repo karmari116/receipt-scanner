@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 
 const ACCOUNTS = [
     { id: 'Karthik Business', label: 'Karthik Business', icon: Briefcase, color: 'text-blue-600' },
-    { id: 'Karrah', label: 'Karrah', icon: User, color: 'text-pink-600' },
+    { id: 'Karrah Business', label: 'Karrah Business', icon: Briefcase, color: 'text-pink-600' },
+    { id: 'Karrah Personal', label: 'Karrah Personal', icon: User, color: 'text-rose-500' },
     { id: 'Cricket', label: 'Cricket', icon: Trophy, color: 'text-green-600' },
     { id: 'Medicine', label: 'Medicine', icon: Pill, color: 'text-purple-600' },
 ];

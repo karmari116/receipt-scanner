@@ -34,7 +34,8 @@ const CATEGORIES = [
 
 const ACCOUNTS = [
     'Karthik Business',
-    'Karrah',
+    'Karrah Business',
+    'Karrah Personal',
     'Cricket',
     'Medicine'
 ];
