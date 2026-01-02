@@ -77,18 +77,39 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
 
-        const total = receipts.reduce((sum, r) => sum + (r.amount || 0), 0);
+        // 1. Total Spent = Sum of what is currently visible in the list (Matches Date/Account/Amount filters)
+        const total = filteredReceipts.reduce((sum, r) => sum + (r.amount || 0), 0);
 
-        const mtd = receipts
+        // 2. For MTD and YTD, we want to respect Account/Search/Amount filters BUT ignore the specific "Date Range" picker.
+        //    This allows users to see "This Month" context even if looking at "Last Month's" data list.
+        const contextReceipts = receipts.filter(r => {
+            // Account Filter
+            if (selectedAccount !== 'All' && r.account !== selectedAccount) return false;
+            // Search Text
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                const merchant = r.merchant?.toLowerCase() || '';
+                const category = r.category?.toLowerCase() || '';
+                const amount = r.amount?.toString() || '';
+                if (!merchant.includes(query) && !category.includes(query) && !amount.includes(query)) return false;
+            }
+            // Amount Range
+            if (amountRange.min && r.amount! < parseFloat(amountRange.min)) return false;
+            if (amountRange.max && r.amount! > parseFloat(amountRange.max)) return false;
+
+            return true;
+        });
+
+        const mtd = contextReceipts
             .filter(r => r.date && new Date(r.date).getMonth() === currentMonth && new Date(r.date).getFullYear() === currentYear)
             .reduce((sum, r) => sum + (r.amount || 0), 0);
 
-        const ytd = receipts
+        const ytd = contextReceipts
             .filter(r => r.date && new Date(r.date).getFullYear() === currentYear)
             .reduce((sum, r) => sum + (r.amount || 0), 0);
 
         return { total, mtd, ytd };
-    }, [receipts]);
+    }, [filteredReceipts, receipts, selectedAccount, searchQuery, amountRange]);
 
     // Unique Accounts for Dropdown (Standard + Existing)
     const accounts = useMemo(() => {
