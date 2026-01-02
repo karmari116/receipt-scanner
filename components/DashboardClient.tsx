@@ -136,6 +136,19 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
                         >
                             <Filter className="h-4 w-4" /> Filters
                         </button>
+                        {(searchQuery || selectedAccount !== 'All' || dateRange.start || dateRange.end || amountRange.min || amountRange.max) && (
+                            <button
+                                onClick={() => {
+                                    setSearchQuery('');
+                                    setSelectedAccount('All');
+                                    setDateRange({ start: '', end: '' });
+                                    setAmountRange({ min: '', max: '' });
+                                }}
+                                className="text-sm text-red-500 hover:text-red-700 px-2 font-medium"
+                            >
+                                Clear
+                            </button>
+                        )}
                         <ManualEntryButton />
                         <a
                             href="/api/export"
@@ -166,14 +179,13 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
                         {/* Date Range */}
                         <div>
                             <label className="text-xs font-semibold text-gray-500 uppercase block mb-1">Date Range</label>
-                            <div className="flex gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                                 <input
                                     type="date"
                                     value={dateRange.start}
                                     onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
                                     className="w-full p-2 border rounded-lg text-sm"
                                 />
-                                <span className="text-gray-400 self-center">-</span>
                                 <input
                                     type="date"
                                     value={dateRange.end}
@@ -186,7 +198,7 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
                         {/* Amount Range */}
                         <div>
                             <label className="text-xs font-semibold text-gray-500 uppercase block mb-1">Amount ($)</label>
-                            <div className="flex gap-2">
+                            <div className="grid grid-cols-2 gap-2">
                                 <input
                                     type="number"
                                     placeholder="Min"
@@ -194,7 +206,6 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
                                     onChange={(e) => setAmountRange(prev => ({ ...prev, min: e.target.value }))}
                                     className="w-full p-2 border rounded-lg text-sm"
                                 />
-                                <span className="text-gray-400 self-center">-</span>
                                 <input
                                     type="number"
                                     placeholder="Max"
