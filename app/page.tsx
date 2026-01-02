@@ -13,6 +13,7 @@ async function getReceipts() {
             take: 1000,
         });
     } catch (e) {
+        console.error("Failed to fetch receipts:", e);
         return [];
     }
 }

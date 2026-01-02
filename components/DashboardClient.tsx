@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Receipt } from '@prisma/client';
 import { Search, Filter, Calendar as CalendarIcon, DollarSign, X, PieChart } from 'lucide-react';
 import ExpenseCharts from './ExpenseCharts';
@@ -33,6 +33,11 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
     const [dateRange, setDateRange] = useState({ start: '', end: '' });
     const [amountRange, setAmountRange] = useState({ min: '', max: '' });
     const [showFilters, setShowFilters] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // -- Derived State (Filtering) --
     const filteredReceipts = useMemo(() => {
@@ -87,6 +92,8 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
         const set = new Set(receipts.map(r => r.account).filter(Boolean));
         return ['All', ...Array.from(set)];
     }, [receipts]);
+
+    if (!isMounted) return <div className="p-10 text-center text-gray-500">Loading dashboard...</div>;
 
     return (
         <div className="space-y-6">
