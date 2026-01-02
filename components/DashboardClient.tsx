@@ -26,6 +26,9 @@ const CATEGORY_COLORS: Record<string, string> = {
     'Other': 'bg-gray-400'
 };
 
+// Standard accounts to ensure they always appear in filters
+const STANDARD_ACCOUNTS = ['Karthik Business', 'Karrah Business', 'Karrah Personal', 'Cricket', 'Medicine'];
+
 export default function DashboardClient({ receipts }: DashboardClientProps) {
     // -- State --
     const [searchQuery, setSearchQuery] = useState('');
@@ -87,10 +90,12 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
         return { total, mtd, ytd };
     }, [receipts]);
 
-    // Unique Accounts for Dropdown
+    // Unique Accounts for Dropdown (Standard + Existing)
     const accounts = useMemo(() => {
-        const set = new Set(receipts.map(r => r.account).filter(Boolean));
-        return ['All', ...Array.from(set)];
+        const receiptAccounts = receipts.map(r => r.account).filter(Boolean) as string[];
+        // Merge standard accounts with any custom legacy ones found in DB
+        const unique = new Set([...STANDARD_ACCOUNTS, ...receiptAccounts]);
+        return ['All', ...Array.from(unique)];
     }, [receipts]);
 
     if (!isMounted) return <div className="p-10 text-center text-gray-500">Loading dashboard...</div>;
