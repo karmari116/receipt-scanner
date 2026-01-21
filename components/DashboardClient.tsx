@@ -4,9 +4,11 @@ import { useState, useMemo, useEffect } from 'react';
 import { Receipt } from '@prisma/client';
 import { Search, Filter, Calendar as CalendarIcon, DollarSign, X, PieChart } from 'lucide-react';
 import ExpenseCharts from './ExpenseCharts';
-import ManualEntryButton from './ManualEntryButton';
+import ExpensesByAccountChart from './ExpensesByAccountChart';
 import ReceiptActions from './ReceiptActions';
 import { ExternalLink, Download } from 'lucide-react';
+
+import ManualEntryButton from './ManualEntryButton';
 
 interface DashboardClientProps {
     receipts: Receipt[];
@@ -246,7 +248,11 @@ export default function DashboardClient({ receipts }: DashboardClientProps) {
             </div>
 
             {/* Charts (Responsive) */}
+            {/* Charts (Responsive) */}
             <ExpenseCharts receipts={filteredReceipts} />
+
+            {/* Accounts Chart */}
+            <ExpensesByAccountChart receipts={filteredReceipts} />
 
             {/* Category Breakdown */}
             {Object.keys(CATEGORY_COLORS).length > 0 && (
